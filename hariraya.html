@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kad Sambutan Hari Raya Aidilfitri</title>
+    <title>3D Card Hover Parallax Tilt Effect</title>
     <style>
         * {
             margin: 0;
@@ -228,6 +228,10 @@
             cursor: move;
         }
 
+        audio#audioPlayer {
+            width: 250px;
+        }
+
         .popup h3 {
             text-align: center;
             color: #007bff;
@@ -263,21 +267,34 @@
     <div class="overlay" id="overlay"></div>
     <div class="popup" id="settingsPopup" onmousedown="startDrag(event)">
         <h3>Setting</h3>
+        
+        <!-- Show current song and elapsed time -->
+        <p><strong>Nama Lagu: </strong><span id="songName">SuasanaHariRaya.mp3</span></p>
+        <p><strong>Waktu Berlalu: </strong><span id="songTime">0:00</span></p>
+        <audio id="audioPlayer" controls autoplay>
+            <source id="audioSource" src="SuasanaHariRaya.mp3" type="audio/mp3">
+        </audio>
+        <label for="speedControl">Kelajuan Lagu:</label>
+        <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed(event)">
+        <span id="speedLabel">1x</span> <!-- Shows the current speed -->
+        <label for="volumeControl">Kawalan Suara:</label>
+        <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1" onchange="adjustVolume(event)">
+        <span id="volumeLabel">100%</span> <!-- Shows the current volume -->
+        <label for="bgMusic">Pilih Lagu MP3 sendiri:</label>
+        <input type="file" id="bgMusic" accept="audio/mp3" onchange="changeBackgroundMusic(event)">
+        <p style="color: red;margin-top: 0;font-size: 10px;">*Lagu ini masih dalam pemantauan</p>
+        
         <label for="fontSize">Saiz Font:</label>
         <select id="fontSize">
             <option value="10px">Kecil</option>
-            <option value="18px" selected>Sederhana</option>
+            <option value="18px" selected="">Sederhana</option>
             <option value="30px">Besar</option>
         </select>
-
-        <label for="bgMusic">Pilih Lagu MP3 sendiri:</label>
-        
-        <input type="file" id="bgMusic" accept="audio/mp3" onchange="changeBackgroundMusic(event)">
-        <p style="color: red;margin-top: 0;font-size: 12px;">*Lagu ini masih dalam pemantauan</p>
-
+    
         <button onclick="applySettings()">Simpan</button>
         <button onclick="closeSettings()">Tutup</button>
     </div>
+    
     <div class="butangsebelumcard" style="display: flex;" id="sah">
     <button class="settings-btn" onclick="openSettings()">⚙ Setting</button>
 
@@ -291,7 +308,7 @@
     <div class="card-container" id="kad" style="display: none;">
         <div class="card glow">
             <div class="card-content">
-                <img src="https://i.pinimg.com/736x/bf/fb/cc/bffbcc6b8219b7b101fc7f3d57be795a.jpg" width="180px" height="180px">
+                <img src="https://i.pinimg.com/736x/77/79/d4/7779d4d64cad06d675d2fd20affe68ae.jpg" width="180px" height="180px">
                 <p style="font-size:10px; color : blue;">Dengan Ini Saya Menggucapkan</p>
                 <h2>SELAMAT HARI RAYA AIDILFITRI</h2>
                 <p>Maaf Zahir dan Batin</p>
@@ -313,32 +330,82 @@
             document.getElementById('settingsPopup').style.display = 'none';
         }
 
-        function applySettings() {
-    const fontSize = document.getElementById('fontSize').value;
-    document.querySelectorAll('h1,h2,p,img,card-container,butangsebelumcard').forEach(el => {
-        el.style.fontSize = fontSize;
-    });
-    
-    const bgMusicInput = document.getElementById('bgMusic');
-    
-    let audio = new Audio();
-    
-    if (bgMusicInput.files.length > 0) {
-        audio.src = URL.createObjectURL(bgMusicInput.files[0]);
-    } else {
+        window.onload = function() {
+            let audio = document.getElementById("audioPlayer"); // Access audio element
+            let audioSource = document.getElementById("audioSource");
         
-        audio.src = "SuasanaHariRaya.mp3";
-    }
-    
-    audio.loop = true;
-    
-    audio.play().catch(function(error) {
-        console.error("Error playing audio: ", error);
-    });
-    
-    closeSettings();
-}
-
+            // Set the default song and start playing automatically
+            audioSource.src = "SuasanaHariRaya.mp3";
+            audio.play().catch(function(error) {
+                console.error("Error playing audio: ", error);
+            });
+        
+            // Update song name and time every second
+            updateSongDetails(audio);
+        
+            // Store reference to audio so we can access it globally
+            window.audio = audio;
+        };
+        
+        function updateSongDetails(audio) {
+            // Set the song name
+            document.getElementById('songName').innerText = audio.src.split("/").pop();
+        
+            // Update the time every second
+            setInterval(() => {
+                let currentTime = audio.currentTime;
+                let minutes = Math.floor(currentTime / 60);
+                let seconds = Math.floor(currentTime % 60);
+                document.getElementById('songTime').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+        
+        function adjustSpeed(event) {
+            const speed = event.target.value;
+            document.getElementById('speedLabel').innerText = `${speed}x`;
+            window.audio.playbackRate = speed; // Adjust playback speed
+        }
+        
+        function adjustVolume(event) {
+            const volume = event.target.value;
+            document.getElementById('volumeLabel').innerText = `${Math.round(volume * 100)}%`;
+            window.audio.volume = volume; // Adjust volume
+        }
+        
+        function applySettings() {
+            const fontSize = document.getElementById('fontSize').value;
+            document.querySelectorAll('h1,h2,p,img,card-container,butangsebelumcard').forEach(el => {
+                el.style.fontSize = fontSize;
+            });
+        
+            const bgMusicInput = document.getElementById('bgMusic');
+            let audio = document.getElementById("audioPlayer");
+        
+            // Check if the user has selected a new audio file
+            if (bgMusicInput.files.length > 0) {
+                audio.src = URL.createObjectURL(bgMusicInput.files[0]);
+            } else {
+                audio.src = "SuasanaHariRaya.mp3"; // Default audio file
+            }
+        
+            audio.autoplay = true;
+            audio.loop = true;
+            
+            // Update the song details (song name and time) whenever the music changes
+            updateSongDetails(audio);
+        
+            audio.play().catch(function(error) {
+                console.error("Error playing audio: ", error);
+            });
+        
+            closeSettings();
+        }
+        
+        function closeSettings() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('settingsPopup').style.display = 'none';
+        }
+        
         function masuk() {
             document.getElementById("kad").style.display = "block";
             document.getElementById("sah").style.display = "none";
