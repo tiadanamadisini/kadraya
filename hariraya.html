@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Card Hover Parallax Tilt Effect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("https://static.vecteezy.com/system/resources/thumbnails/006/626/672/small_2x/realistic-ramadan-kareem-flat-eid-al-fitr-illustration-mubarak-wallpaper-hari-raya-aidilfitri-free-vector.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        .butangsebelumcard {
+            backdrop-filter: blur(20px);
+            background-color: rgba(0, 0, 0, 0.322);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+            height: 100%;
+            width: 100%;
+        }
+
+        .cardsah {
+            width: 300px;
+            height: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .isikadsah {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .isikadsah h1 {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        .butangmasuk {
+            background: linear-gradient(45deg, #ff6a00, #ee0979);
+            color: white;
+            font-size: 18px;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .butangmasuk:hover {
+            background: linear-gradient(45deg, #ee0979, #ff6a00);
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .butangmasuk:active {
+            transform: scale(0.95);
+        }
+
+        p {
+            font-size: 14px;
+            color: red;
+            margin-top: 5px;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            display: none;
+        }
+
+        img {
+            border-radius: 10px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.356);
+        }
+
+        .card {
+            width: 300px;
+            height: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .card-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            margin-top: 0px;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        .card:hover {
+            transform: rotateY(15deg) rotateX(15deg);
+        }
+
+        .card:hover .card-content {
+            transform: translateZ(40px);
+        }
+
+        .firework {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background-color: #ffbb00;
+            border-radius: 50%;
+            animation: explosion 1s ease-out forwards;
+        }
+
+        .firework::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background-color: #ffbb00;
+            border-radius: 50%;
+            animation: explosion 1s ease-out forwards;
+        }
+
+        @keyframes explosion {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(3);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+
+        .glow {
+            animation: pearlGlow 2s infinite;
+        }
+
+        @keyframes pearlGlow {
+            0% {
+                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.6), 0 0 30px 10px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.8), 0 0 40px 15px rgba(255, 255, 255, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.6), 0 0 30px 10px rgba(255, 255, 255, 0.3);
+            }
+        }
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .settings-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 2;
+            border-radius: 8px;
+            width: 300px;
+            cursor: move;
+        }
+
+        .popup h3 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .popup select, .popup input[type="file"] {
+            padding: 5px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        .popup button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button class="settings-btn" onclick="openSettings()">⚙ Setting</button> 
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="settingsPopup" onmousedown="startDrag(event)">
+        <h3>Setting</h3>
+        <label for="fontSize">Saiz Font:</label>
+        <select id="fontSize">
+            <option value="10px">Kecil</option>
+            <option value="18px" selected>Sederhana</option>
+            <option value="30px">Besar</option>
+        </select>
+
+        <label for="bgMusic">Pilih Lagu MP3 sendiri:</label>
+        
+        <input type="file" id="bgMusic" accept="audio/mp3" onchange="changeBackgroundMusic(event)">
+        <p style="color: red;margin-top: 0;font-size: 12px;">*Lagu ini masih dalam pemantauan</p>
+
+        <button onclick="applySettings()">Simpan</button>
+        <button onclick="closeSettings()">Tutup</button>
+    </div>
+    <div class="butangsebelumcard" style="display: flex;" id="sah">
+    <button class="settings-btn" onclick="openSettings()">⚙ Setting</button>
+
+        <div class="cardsah" align="center">
+            <h1 class="isikadsah" style="color: black;">Kad Raya</h1>
+            <button class="butangmasuk" onclick="masuk()">Kad Raya</button>
+            <p class="isikadsah">*Tekan Butang Kad Raya untuk Melihat Isi Kad Raya</p>
+        </div>
+    </div>
+    
+    <div class="card-container" id="kad" style="display: none;">
+        <div class="card glow">
+            <div class="card-content">
+                <img src="https://i.pinimg.com/736x/77/79/d4/7779d4d64cad06d675d2fd20affe68ae.jpg" width="180px" height="180px">
+                <p style="font-size:10px; color : blue;">Dengan Ini Saya Menggucapkan</p>
+                <h2>SELAMAT HARI RAYA AIDILFITRI</h2>
+                <p>Maaf Zahir dan Batin</p>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="fireworks-container"></div>
+
+    <script>
+        function openSettings() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('settingsPopup').style.display = 'block';
+        }
+
+        function closeSettings() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('settingsPopup').style.display = 'none';
+        }
+
+        function applySettings() {
+    const fontSize = document.getElementById('fontSize').value;
+    document.querySelectorAll('h1,h2,p,img,card-container,butangsebelumcard').forEach(el => {
+        el.style.fontSize = fontSize;
+    });
+    
+    const bgMusicInput = document.getElementById('bgMusic');
+    
+    let audio = new Audio();
+    
+    if (bgMusicInput.files.length > 0) {
+        audio.src = URL.createObjectURL(bgMusicInput.files[0]);
+    } else {
+        
+        audio.src = "SuasanaHariRaya.mp3";
+    }
+    
+    audio.loop = true;
+    
+    audio.play().catch(function(error) {
+        console.error("Error playing audio: ", error);
+    });
+    
+    closeSettings();
+}
+
+        function masuk() {
+            document.getElementById("kad").style.display = "block";
+            document.getElementById("sah").style.display = "none";
+
+            startFireworks();
+        }
+
+        function startFireworks() {
+            setInterval(() => {
+                let container = document.getElementById('fireworks-container');
+                let firework = document.createElement('div');
+                firework.classList.add('firework');
+                firework.style.top = `${Math.random() * 100}%`;
+                firework.style.left = `${Math.random() * 100}%`;
+                container.appendChild(firework);
+
+                setTimeout(() => {
+                    firework.remove();
+                }, 1000);
+            }, 300);
+        }
+
+        const card = document.querySelector('.card');
+
+        card.addEventListener('mousemove', (e) => {
+            const { width, height, left, top } = card.getBoundingClientRect();
+            const centerX = left + width / 2;
+            const centerY = top + height / 2;
+
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            const deltaX = (mouseX - centerX) / width;
+            const deltaY = (mouseY - centerY) / height;
+
+            const rotateX = (deltaY * 150); 
+            const rotateY = -(deltaX * 150);
+
+            card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        });
+    </script>
+</body>
+</html>
