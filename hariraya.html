@@ -141,18 +141,6 @@
             animation: explosion 1s ease-out forwards;
         }
 
-        .firework::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 10px;
-            height: 10px;
-            background-color: #ffbb00;
-            border-radius: 50%;
-            animation: explosion 1s ease-out forwards;
-        }
-
         @keyframes explosion {
             0% {
                 transform: scale(0);
@@ -165,22 +153,6 @@
             100% {
                 transform: scale(1);
                 opacity: 0;
-            }
-        }
-
-        .glow {
-            animation: pearlGlow 2s infinite;
-        }
-
-        @keyframes pearlGlow {
-            0% {
-                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.6), 0 0 30px 10px rgba(255, 255, 255, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.8), 0 0 40px 15px rgba(255, 255, 255, 0.4);
-            }
-            100% {
-                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.6), 0 0 30px 10px rgba(255, 255, 255, 0.3);
             }
         }
 
@@ -224,12 +196,12 @@
             display: none;
             z-index: 2;
             border-radius: 8px;
-            width: 300px;
-            cursor: move;
+            width: 90%;
+            max-width: 400px;
         }
 
         audio#audioPlayer {
-            width: 250px;
+            width: 360px;
         }
 
         .popup h3 {
@@ -237,7 +209,7 @@
             color: #007bff;
         }
 
-        .popup select, .popup input[type="file"] {
+        .popup select, .popup input[type="file"], .popup input[type="range"] {
             padding: 5px;
             margin: 10px 0;
             width: 100%;
@@ -288,12 +260,10 @@
         <audio id="audioPlayer" controls autoplay>
             <source id="audioSource" src="https://tiadanamadisini.github.io/kadraya/SuasanaHariRaya.mp3" type="audio/mp3">
         </audio>        
-        <label for="speedControl">Kelajuan Lagu:</label>
+        <label for="speedControl">Kelajuan Lagu:</label> <span id="speedLabel">1x</span> <!-- Shows the current speed -->
         <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed(event)">
-        <span id="speedLabel">1x</span> <!-- Shows the current speed -->
-        <label for="volumeControl">Kawalan Suara:</label>
+        <label for="volumeControl">Kawalan Suara:</label> <span id="volumeLabel">100%</span> <!-- Shows the current volume -->
         <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1" onchange="adjustVolume(event)">
-        <span id="volumeLabel">100%</span> <!-- Shows the current volume -->
         <label for="bgMusic">Pilih Lagu MP3 sendiri:</label>
         <input type="file" id="bgMusic" accept="audio/mp3" onchange="changeBackgroundMusic(event)">
         <p style="color: red;margin-top: 0;font-size: 10px;">*Lagu ini masih dalam pemantauan</p>
@@ -374,10 +344,10 @@
             const popup = document.getElementById('interestPopup');
             popup.style.display = 'block'; // Show the popup
 
-            // Hide the popup after limit timer
+            // Hide the popup after 30 seconds
             setTimeout(() => {
                 popup.style.display = 'none';
-            }, 5000);
+            }, 5000); // 30000 milliseconds = 30 seconds
         }
 
         function updateSongDetails(audio) {
