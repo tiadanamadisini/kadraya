@@ -168,7 +168,6 @@
             }
         }
 
-
         .glow {
             animation: pearlGlow 2s infinite;
         }
@@ -184,6 +183,7 @@
                 box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.6), 0 0 30px 10px rgba(255, 255, 255, 0.3);
             }
         }
+
         .settings-btn {
             position: absolute;
             top: 20px;
@@ -260,6 +260,20 @@
         .popup button:hover {
             background-color: #0056b3;
         }
+
+        .interest-popup {
+            position: fixed;
+            top: 8%;
+            right: 2%;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 3;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -273,7 +287,7 @@
         <p><strong>Waktu Berlalu: </strong><span id="songTime">0:00</span></p>
         <audio id="audioPlayer" controls autoplay>
             <source id="audioSource" src="https://tiadanamadisini.github.io/kadraya/SuasanaHariRaya.mp3" type="audio/mp3">
-        </audio>
+        </audio>        
         <label for="speedControl">Kelajuan Lagu:</label>
         <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed(event)">
         <span id="speedLabel">1x</span> <!-- Shows the current speed -->
@@ -296,7 +310,7 @@
     </div>
     
     <div class="butangsebelumcard" style="display: flex;" id="sah">
-    <button class="settings-btn" onclick="openSettings()">⚙ Setting</button>
+        <button class="settings-btn" onclick="openSettings()">⚙ Setting</button>
 
         <div class="cardsah" align="center">
             <h1 class="isikadsah" style="color: black;">Kad Raya</h1>
@@ -316,8 +330,12 @@
         </div>
     </div>
 
-    
     <div id="fireworks-container"></div>
+
+    <!-- New Interest Popup -->
+    <div class="interest-popup" id="interestPopup">
+        <h3>Pilih Lagu Sesuai Minat Anda di Setting</h3>
+    </div>
 
     <script>
         function openSettings() {
@@ -331,11 +349,13 @@
         }
 
         window.onload = function() {
-            let audio = document.getElementById("audioPlayer"); // Access audio element
+            let audio = document.getElementById("audioPlayer");
             let audioSource = document.getElementById("audioSource");
         
             // Set the default song and start playing automatically
             audioSource.src = "https://tiadanamadisini.github.io/kadraya/SuasanaHariRaya.mp3";
+            
+            // Play the audio explicitly
             audio.play().catch(function(error) {
                 console.error("Error playing audio: ", error);
             });
@@ -345,8 +365,21 @@
         
             // Store reference to audio so we can access it globally
             window.audio = audio;
+
+            // Show the interest popup
+            showInterestPopup();
         };
-        
+
+        function showInterestPopup() {
+            const popup = document.getElementById('interestPopup');
+            popup.style.display = 'block'; // Show the popup
+
+            // Hide the popup after 30 seconds
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 30000); // 30000 milliseconds = 30 seconds
+        }
+
         function updateSongDetails(audio) {
             // Set the song name
             document.getElementById('songName').innerText = audio.src.split("/").pop();
@@ -385,7 +418,7 @@
             if (bgMusicInput.files.length > 0) {
                 audio.src = URL.createObjectURL(bgMusicInput.files[0]);
             } else {
-                audio.src = "SuasanaHariRaya.mp3"; // Default audio file
+                audio.src = "https://tiadanamadisini.github.io/kadraya/SuasanaHariRaya.mp3"; // Default audio file
             }
         
             audio.autoplay = true;
