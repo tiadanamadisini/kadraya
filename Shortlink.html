@@ -1,46 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shortlink Generator</title>
+    <title>Pendekkan Link</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-        input, button { margin: 10px; padding: 10px; }
-        .shortlink { margin-top: 20px; font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result a {
+            color: #007bff;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
-    <h2>Shortlink Generator</h2>
-    <input type="text" id="originalUrl" placeholder="Masukkan URL asal" size="40">
-    <input type="text" id="customAlias" placeholder="Masukkan nama pendek" size="20">
-    <button onclick="generateShortlink()">Pendekkan</button>
-    <div class="shortlink" id="shortlinkOutput"></div>
+    <div class="container">
+        <h1>Pendekkan Link</h1>
+        <form id="link-form">
+            <label for="url">Masukkan URL:</label>
+            <input type="url" id="url" required>
+
+            <label for="custom">Link Pendek Khas (Optional):</label>
+            <input type="text" id="custom" pattern="[a-zA-Z0-9]{3,10}">
+
+            <button type="submit">Pendekkan</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
 
     <script>
         const shortlinks = JSON.parse(localStorage.getItem('shortlinks')) || {};
 
-        function generateShortlink() {
-            const originalUrl = document.getElementById('originalUrl').value;
-            const customAlias = document.getElementById('customAlias').value;
-            const shortDomain = window.location.origin + '/#';
-            
-            if (!originalUrl || !customAlias) {
-                alert('Sila masukkan URL asal dan nama pendek.');
-                return;
+        document.getElementById('link-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const url = document.getElementById('url').value;
+            let custom = document.getElementById('custom').value;
+            let shortUrl;
+
+            if (custom) {
+                if (shortlinks[custom]) {
+                    alert("Nama pautan pendek ini sudah digunakan!");
+                    return;
+                }
+                shortUrl = custom;
+            } else {
+                shortUrl = "short" + Math.random().toString(36).substring(2, 8);
             }
-            
-            shortlinks[customAlias] = originalUrl;
+
+            shortlinks[shortUrl] = url;
             localStorage.setItem('shortlinks', JSON.stringify(shortlinks));
-            
-            const shortUrl = `${shortDomain}${customAlias}`;
-            document.getElementById('shortlinkOutput').innerHTML = `Shortlink: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
-        }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<p>Link Pendek: <a href="?s=${shortUrl}">${window.location.origin}${window.location.pathname}?s=${shortUrl}</a></p>`;
+        });
 
         window.onload = function() {
-            const hash = window.location.hash.substring(1);
-            if (hash && shortlinks[hash]) {
-                window.location.href = shortlinks[hash];
+            const urlParams = new URLSearchParams(window.location.search);
+            const alias = urlParams.get('s');
+            if (alias && shortlinks[alias]) {
+                window.location.href = shortlinks[alias];
             }
         };
     </script>
