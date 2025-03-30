@@ -18,7 +18,7 @@
     <div class="shortlink" id="shortlinkOutput"></div>
 
     <script>
-        const shortlinks = {};
+        const shortlinks = JSON.parse(localStorage.getItem('shortlinks')) || {};
 
         function generateShortlink() {
             const originalUrl = document.getElementById('originalUrl').value;
@@ -31,6 +31,8 @@
             }
             
             shortlinks[customAlias] = originalUrl;
+            localStorage.setItem('shortlinks', JSON.stringify(shortlinks));
+            
             const shortUrl = `${shortDomain}${customAlias}`;
             document.getElementById('shortlinkOutput').innerHTML = `Shortlink: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
         }
