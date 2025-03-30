@@ -1,118 +1,46 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendekkan Link</title>
+    <title>Shortlink Generator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 50%;
-            margin: auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .result {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .result a {
-            color: #007bff;
-            text-decoration: none;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input, button { margin: 10px; padding: 10px; }
+        .shortlink { margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Pendekkan Link</h1>
-        <form id="link-form">
-            <label for="url">Masukkan URL:</label>
-            <input type="url" id="url" required>
-
-            <label for="custom">Link Pendek Khas (Optional):</label>
-            <input type="text" id="custom">
-
-            <button type="submit">Pendekkan</button>
-        </form>
-
-        <div id="result" class="result"></div>
-    </div>
+    <h2>Shortlink Generator</h2>
+    <input type="text" id="originalUrl" placeholder="Masukkan URL asal" size="40">
+    <input type="text" id="customAlias" placeholder="Masukkan nama pendek" size="20">
+    <button onclick="generateShortlink()">Pendekkan</button>
+    <div class="shortlink" id="shortlinkOutput"></div>
 
     <script>
-        // Tangkap event untuk borang submit
-        document.getElementById('link-form').addEventListener('submit', function(event) {
-            event.preventDefault();
+        const shortlinks = {};
 
-            const url = document.getElementById('url').value;
-            let custom = document.getElementById('custom').value;
-            let shortUrl;
-
-            // Jika pengguna memilih pautan pendek tersuai
-            if (custom) {
-                // Semak jika pautan pendek sudah ada
-                if (localStorage.getItem(custom)) {
-                    alert("Nama pautan pendek ini sudah digunakan!");
-                    return;
-                }
-                shortUrl = custom;
-            } else {
-                // Cipta pautan pendek automatik
-                shortUrl = "short" + Math.random().toString(36).substring(2, 8);  // Contoh: shortabcd12
+        function generateShortlink() {
+            const originalUrl = document.getElementById('originalUrl').value;
+            const customAlias = document.getElementById('customAlias').value;
+            const shortDomain = window.location.origin + '/#';
+            
+            if (!originalUrl || !customAlias) {
+                alert('Sila masukkan URL asal dan nama pendek.');
+                return;
             }
-
-            // Simpan dalam localStorage
-            localStorage.setItem(shortUrl, url);
-
-            // Paparkan pautan pendek
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `<p>Link Pendek: <a href="#" onclick="redirectTo('${shortUrl}')">${window.location.href}${shortUrl}</a></p>`;
-        });
-
-        // Fungsi untuk redirect apabila pautan pendek diklik
-        function redirectTo(shortUrl) {
-            const originalUrl = localStorage.getItem(shortUrl);
-            if (originalUrl) {
-                window.location.href = originalUrl;
-            } else {
-                alert("Pautan tidak dijumpai.");
-            }
+            
+            shortlinks[customAlias] = originalUrl;
+            const shortUrl = `${shortDomain}${customAlias}`;
+            document.getElementById('shortlinkOutput').innerHTML = `Shortlink: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
         }
+
+        window.onload = function() {
+            const hash = window.location.hash.substring(1);
+            if (hash && shortlinks[hash]) {
+                window.location.href = shortlinks[hash];
+            }
+        };
     </script>
 </body>
 </html>
