@@ -98,14 +98,13 @@
             localStorage.setItem('shortlinks', JSON.stringify(shortlinks));
 
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `<p>Link Pendek: <a href="?s=${shortUrl}">${window.location.origin}${window.location.pathname}?s=${shortUrl}</a></p>`;
+            resultDiv.innerHTML = `<p>Link Pendek: <a href="/${shortUrl}">${window.location.origin}/${shortUrl}</a></p>`;
         });
 
         window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const alias = urlParams.get('s');
-            if (alias && shortlinks[alias]) {
-                window.location.href = shortlinks[alias];
+            const path = window.location.pathname.substring(1); // Ambil path selepas domain
+            if (path && shortlinks[path]) {
+                window.location.href = shortlinks[path];
             }
         };
     </script>
